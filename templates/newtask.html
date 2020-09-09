@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form action="{{ url_for('newTask') }}" method="POST">
+        {{ form.hidden_tag()}}
+        <div class="input-field">
+            {{ form.title.label }}
+            {{ form.title }}
+        </div>
+        <br><br>
+        <div class="input-field">
+            {{ form.note.label }} <br>
+            {{ form.note(class = 'materialize-textarea') }} <br><br>
+        </div>
+        {{ form.submit(class = 'btn red white-text wave-effect wave-light') }}
+    </form>
+
+{% endblock %}

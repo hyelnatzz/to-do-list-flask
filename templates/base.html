@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.min.css')}}">
+    <title>Todo App</title>
+</head>
+<body>
+    <div class="row">
+        <div class="container">
+            <h1>Todo App</h1>
+        </div>
+    </div>
+    
+    {% block content %}
+        
+    {% endblock %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.min.js')}}"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="container">
+            {% if get_flashed_messages() %}
+                {% for message in get_flashed_messages()  %}
+                <p class="alert red white-text" onchange="return Materialize.toast('{{ message }}', 3000);">{{ message }}</p>
+                {% endfor %}
+                
+            {% endif %}
+                
+            <a href="{{ url_for('newTask')}}"> Create New Task</a>
+            
+            {% if tasks %}
+                {% for status in statuses %}
+                    <h4> {{ status | capitalize }}</h4>
+                    <table>
+                    {% for task in tasks %}
+                        {% if task.status == status %}
+                            <h5> {{ task.title }}</h5>
+                            <p> {{ task.note }}</p>
+                                {% if task.status == 'todo' %}
+                                    <a href="{{ url_for('startTask', task_id = task.id)}}"> Start </a>
+                                    <a href="{{ url_for('editTask', task_id = task.id)}}"> Edit </a>
+                                {% elif task.status == 'doing' %}
+                                    <a href="{{ url_for('finishTask', task_id = task.id)}}"> Done </a>
+                                    <a href="{{ url_for('editTask', task_id = task.id)}}"> Edit </a>
+                                {% elif task.status == 'done' %}
+                                    <a href="{{ url_for('restartTask', task_id = task.id)}}"> Restart </a>
+                                {% endif %}
+                                
+                                <a href="{{ url_for('removeTask', task_id = task.id)}}" onclick="return confirm('Are you sure you want to delete this task?');"> Remove </a>
+                        {% endif %}
+                        
+                    {% endfor %}
+                    <hr>
+
+                {% endfor %}
+            {% else %}
+                <h4>No tasks</h4>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
