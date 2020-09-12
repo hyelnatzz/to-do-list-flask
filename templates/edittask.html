@@ -2,13 +2,43 @@
 
 {% block content %}
 
-<form action="{{ url_for('editTask', task_id = task.id) }}" method="POST">
-    {{ form.hidden_tag() }}
-    {{ form.title.label }} <br>
-    {{ form.title }} <br><br>
-    {{ form.note.label }} <br>
-    {{ form.note }} <br><br>
-    {{ form.update }} 
-</form>
+<div class="row">
+    <div class="container">
+        <div class="row">
+            <div class="col m3"></div>
+            <div class="col s12 m6 white" style="padding: 10px;">
+                <form action="{{ url_for('editTask', task_id = task.id) }}" method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="input-field">
+                        {{ form.title.label }}
+                        {{ form.title }}
+
+                    </div>
+                    {{ form.start_time.label }}
+                    <div class="input-field">
+                        {{ form.start_time(type='time') }}
+                    </div>
+                    <div class="input-field">
+
+                        {{ form.duration.label }}
+                        {{ form.duration }}
+                        {% for error in form.duration.errors %}
+                        <p style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">*{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        {{ form.note.label }}
+                        {{ form.note(class = 'materialize-textarea', style='marging-bottom: 0;') }}
+                        {% for error in form.note.errors %}
+                        <p style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;"> *{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {{ form.update(class='btn red white-text') }} 
+                </form>
+            </div>
+            <div class="col m3"></div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

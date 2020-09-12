@@ -3,43 +3,146 @@
 {% block content %}
     <div class="row">
         <div class="container">
-            {% if get_flashed_messages() %}
-                {% for message in get_flashed_messages()  %}
-                <p class="alert red white-text" onchange="return Materialize.toast('{{ message }}', 3000);">{{ message }}</p>
-                {% endfor %}
+            <div class="col s12 grey lighten-5">
+                {% if get_flashed_messages() %}
+                    {% for message in get_flashed_messages()  %}
+                    <p class="red white-text">{{ message }} </p>
+                    {% endfor %}
+                    
+                {% endif %}
+                    
+                <a href="{{ url_for('newTask')}}" class="btn red btn-small" style="margin-top: 10px;"> Create New Task </a>
                 
-            {% endif %}
-                
-            <a href="{{ url_for('newTask')}}"> Create New Task</a>
-            
-            {% if tasks %}
-                {% for status in statuses %}
-                    <h4> {{ status | capitalize }}</h4>
-                    <table>
-                    {% for task in tasks %}
-                        {% if task.status == status %}
-                            <h5> {{ task.title }}</h5>
-                            <p> {{ task.note }}</p>
-                                {% if task.status == 'todo' %}
-                                    <a href="{{ url_for('startTask', task_id = task.id)}}"> Start </a>
-                                    <a href="{{ url_for('editTask', task_id = task.id)}}"> Edit </a>
-                                {% elif task.status == 'doing' %}
-                                    <a href="{{ url_for('finishTask', task_id = task.id)}}"> Done </a>
-                                    <a href="{{ url_for('editTask', task_id = task.id)}}"> Edit </a>
-                                {% elif task.status == 'done' %}
-                                    <a href="{{ url_for('restartTask', task_id = task.id)}}"> Restart </a>
+                {% if tasks %}
+                    {% for status in statuses %}
+                        <div class="grey lighten-3 rounded" style="padding-left: 10px; margin-bottom: 5px;">
+                            <p class="grey-text" style="font-family: 'Times New Roman', Times, serif; font-size: small; font-weight: bold; margin-bottom: 0;"> {{ status | capitalize }}</p>
+                        </div>
+                        
+                        <table class="bordered highlight striped ">
+                            {% if status == 'todo' %}
+                            <tr class="red lighten-5">
+                                <th>Task</th>
+                                <th>Start</th>
+                                <th>Finish</th>
+                                <th>Duration</th>
+                            </tr>
+                            
+                            {% elif status == 'doing'%}
+                            <tr class="red lighten-5">
+                                <th>Task</th>
+                                <th>Duration</th>
+                                <th>Finish</th>
+                            </tr>
+                            {% elif status == 'done'%}
+                            <tr class="red lighten-5">
+                                <th>Task</th>
+                                <th>Started</th>
+                                <th>Finished</th>
+                            </tr>
+                            {% endif %}
+                            {% for task in tasks %} 
+                                {% if task.status == status %}
+                                    
+                                
+                                <tr  style="margin-bottom: 10px;">
+                                    <td class="collection-item">
+                                        <p class="" style="padding: 0; margin: 0; font-size: small; color: #666;"> {{ task.title }}</p>
+                                        <div class="secondary-content">
+                                            {% if task.status == 'todo' %}
+                                                <a href="{{ url_for('startTask', task_id = task.id)}}" class="btn btn-flat" style="padding: 5px;"> 
+                                                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-play"
+                                                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10.804 8L5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" />
+                                                    </svg>
+                                                </a>
+                                                <a href="{{ url_for('editTask', task_id = task.id)}}" class="btn btn-flat" style="padding: 5px;"> 
+                                                    <svg width="1.5em" height="1.5em"
+                                                        viewBox="0 0 16 16" class="bi bi-pencil-square"
+                                                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                        <path fill-rule="evenodd"
+                                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                                    </svg> 
+                                                </a>
+                                            {% elif task.status == 'doing' %}
+                                                <a href="{{ url_for('finishTask', task_id = task.id)}}" class="btn btn-flat" style="padding: 5px;">
+                                                    <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-stop"
+                                                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M3.5 5A1.5 1.5 0 0 1 5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5zM5 4.5a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H5z" />
+                                                    </svg>
+                                                </a>
+                                                <a href="{{ url_for('editTask', task_id = task.id)}}" class="btn btn-flat" style="padding: 5px;"> 
+                                                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
+                                                        class="bi bi-pencil-square" fill="currentColor"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                        <path fill-rule="evenodd"
+                                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                                    </svg>
+                                                </a>
+                                            {% elif task.status == 'done' %}
+                                                <a href="{{ url_for('restartTask', task_id = task.id)}}" class="btn btn-flat" style="padding: 5px;"> 
+                                                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
+                                                        class="bi bi-skip-backward" fill="currentColor"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M.5 3.5A.5.5 0 0 1 1 4v3.248l6.267-3.636c.52-.302 1.233.043 1.233.696v2.94l6.267-3.636c.52-.302 1.233.043 1.233.696v7.384c0 .653-.713.998-1.233.696L8.5 8.752v2.94c0 .653-.713.998-1.233.696L1 8.752V12a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm7 1.133L1.696 8 7.5 11.367V4.633zm7.5 0L9.196 8 15 11.367V4.633z" />
+                                                    </svg>
+                                                </a>
+                                            {% endif %}
+                                            
+                                            <a href="{{ url_for('removeTask', task_id = task.id)}}" onclick="return confirm('Are you sure you want to delete this task?');" class="btn btn-flat" style="padding: 5px;">
+                                                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-trash"
+                                                    fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                    <path fill-rule="evenodd"
+                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    {% if task.status == 'todo' %}
+                                        <td class="collection-item">
+                                            <p> {{ task.start_time }}</p>
+                                        </td>
+                                        <td class="collection-item">
+                                            <p> {{ task.finish_time }}</p>
+                                        </td>
+                                        <td class="collection-item">
+                                            <p> {{ task.duration }} Minutes</p>
+                                        </td>
+                                    {% elif task.status == 'doing' %}
+                                        <td class="collection-item">
+                                            <p> {{ task.duration }} Minutes</p>
+                                        </td>
+                                        <td class="collection-item">
+                                            <p> {{ task.finish_time }}</p>
+                                        </td>
+                                    {% elif task.status == 'done' %}
+                                        <td class="collection-item">
+                                            <p> {{ task.start_time }}</p>
+                                        </td>
+                                        <td class="collection-item">
+                                            <p> {{ task.finish_time }}</p>
+                                        </td>
+                                    {% endif %}
+                                </tr>
                                 {% endif %}
                                 
-                                <a href="{{ url_for('removeTask', task_id = task.id)}}" onclick="return confirm('Are you sure you want to delete this task?');"> Remove </a>
-                        {% endif %}
-                        
-                    {% endfor %}
-                    <hr>
+                            {% endfor %}
+                        </table>
 
-                {% endfor %}
-            {% else %}
-                <h4>No tasks</h4>
-            {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <h4>No tasks</h4>
+                {% endif %}
+            </div>
         </div>
     </div>
 
