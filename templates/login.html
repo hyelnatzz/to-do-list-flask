@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="container">
+        {% if get_flashed_messages() %}
+            {% for message in get_flashed_messages()  %}
+            <p class="red white-text">{{ message }} </p>
+            {% endfor %}
+
+        {% endif %}
+        <div class="row">
+            <div class="col m3"></div>
+            <div class="col s12 m6 white" style="padding: 10px;">
+                <form action="{{ url_for('login') }}" method="POST">
+                    {{ form.hidden_tag()}}
+                    <div class="input-field">
+                        {{ form.username.label }}
+                        {{ form.username }}
+                         {% for error in form.username.errors %}
+                         <p style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">
+                             *{{ error }}</p>
+                         {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        {{ form.password.label }}
+                        {{ form.password }}
+                        {% for error in form.password.errors %}
+                        <p style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">
+                            *{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    {{ form.login(class = 'btn red white-text wave-effect wave-light') }}
+                </form>
+                <p>don't have account? <a href="/signup">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

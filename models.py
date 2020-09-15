@@ -9,17 +9,27 @@ app.config['SECRET_KEY'] = 'secret'
 
 db = SQLAlchemy(app)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique = True, nullable=False)
+    name = db.Column(db.String(100), nullable = False)
+    password = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(50), nullable = False, unique=True)
+
+
 class taskDB(db.Model):
     id = db.Column(db.Integer, primary_key= True)
     title = db.Column(db.String(150), nullable= False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     note = db.Column(db.String(500), nullable=False)
     status = db.Column(db.String(15), nullable=False)
     duration = db.Column(db.Integer, nullable=False)
     current_date = db.Column(db.String(100), default=datetime.strftime(datetime.now(), '%d/%m/%Y'))
     start_time = db.Column(db.String(15), nullable=False)
     finish_time = db.Column(db.String(15), nullable=False)
+    user = db.relationship(User)
 
 
     
-
+db.create_all()
 

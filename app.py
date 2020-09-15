@@ -1,5 +1,5 @@
 from flask import Flask, request, url_for, redirect, flash, render_template
-from forms import TaskForm
+from forms import TaskForm, loginForm, signUpForm
 from models import taskDB
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -36,6 +36,22 @@ def finishTime(start_time, duration):                                           
     return ':'.join([str(i) for i in [hr, mt]])
 #########################################################################################
 
+@app.route('/login/', methods=['GET', 'POST'])
+def login():
+    form = loginForm()
+    if form.validate_on_submit():
+        username = form.username.data.strip()
+        password = form.password.data.strip()
+        return redirect('home.html')
+    return render_template('login.html', form=form, today = present_date)
+
+
+@app.route('/signup/', methods=['GET', 'POST'])
+def signup():
+    form = signUpForm()
+    if form.validate_on_submit():
+        return redirect( url_for('home'))
+    return render_template('signup.html', form=form, today = present_date)
 
 
 @app.route('/', methods=['GET', 'POST'])

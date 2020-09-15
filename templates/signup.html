@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="container">
+        <div class="row">
+            <div class="col m3"></div>
+            <div class="col s12 m6 white" style="padding: 10px;">
+                <form action="{{ url_for('signup') }}" method="POST">
+                    {{ form.hidden_tag()}}
+                    <div class="input-field">
+                        {{ form.username.label }}
+                        {{ form.username }}
+                        {% for error in form.username.errors %}
+                        <p style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">
+                            *{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        {{ form.full_name.label }}
+                        {{ form.full_name }}
+                        {% for error in form.full_name.errors %}
+                        <p style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">
+                            *{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        {{ form.email.label }}
+                        {{ form.email }}
+                        {% for error in form.email.errors %}
+                        <p style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">
+                            *{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        {{ form.password.label }}
+                        {{ form.password }}
+                        {% for error in form.password.errors %}
+                        <p
+                            style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">
+                            *{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        {{ form.confirm_password.label }}
+                        {{ form.confirm_password }}
+                        {% for error in form.confirm_password.errors %}
+                        <p
+                            style="display: block; margin-top: -18px; padding: 2px 5px;background-color: #Fdd; font-size: smaller; font-style: italic; color: red; font-weight: bold;">
+                            *{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    {{ form.signup(class = 'btn red white-text wave-effect wave-light') }}
+                </form>
+                <p>have an account? <a href="/signup">Sign In</a> instead.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
