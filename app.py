@@ -1,7 +1,11 @@
 from flask import Flask, request, url_for, redirect, flash, render_template
+from flask_login.utils import login_user
 from forms import TaskForm, loginForm, signUpForm
-from models import taskDB
+from models import User, taskDB
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_required, login_required, logout_user, current_user
 from datetime import datetime
 """
 tasks = [{'title':'Wash clothes', 'note':'Take out and clean the dirty laundry', 'status':'todo'},
@@ -14,11 +18,16 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:hyelda@localhost/todo'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'secret'
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 db = SQLAlchemy(app)
 
 present_date = datetime.strftime(datetime.now(), '%A, %d %B %Y')
 
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.get(int(user_id))
 
 ##################################### HELPER ###########################################
 def finishTime(start_time, duration):                                                  #
@@ -42,7 +51,17 @@ def login():
     if form.validate_on_submit():
         username = form.username.data.strip()
         password = form.password.data.strip()
-        return redirect('home.html')
+        user = User.query.filter_by(username = username).first()
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user, remember=False)
+                return redirect( url_for('home'))
+            else:
+                flash('Incorrect password')
+                return render_template('login.html', form=form, today=present_date)
+        else:
+            flash('username does not exist')
+            return render_template('login.html', form=form, today=present_date)
     return render_template('login.html', form=form, today = present_date)
 
 
@@ -50,23 +69,36 @@ def login():
 def signup():
     form = signUpForm()
     if form.validate_on_submit():
-        return redirect( url_for('home'))
+        user = User()
+        user.username = form.username.data.strip()
+        user.name = form.full_name.data.strip()
+        user.password = generate_password_hash(form.password.data.strip(), method='sha256')
+        user.email = form.email.data.strip()
+        db.session.add(user)
+        db.session.commit()
+        return redirect( url_for('success'))
     return render_template('signup.html', form=form, today = present_date)
 
+@app.route('/success')
+def success():
+    return render_template('success.html') 
 
 @app.route('/', methods=['GET', 'POST'])
+@login_required
 def home():
     status = ['todo','doing', 'done']
-    tasks = db.session.query(taskDB).all()
+    tasks = db.session.query(taskDB).filter_by(user_id = current_user.id, current_date = datetime.strftime(datetime.now(), '%d/%m/%Y'))
     tasks = sorted(tasks, key= lambda i: i.id)
     print(tasks)
-    return render_template('home.html', tasks = tasks, statuses = status, today = present_date)
+    return render_template('home.html', tasks = tasks, statuses = status, today = present_date, user=current_user)
 
 @app.route('/new/', methods=['POST', 'GET'])
+@login_required
 def newTask():
     form = TaskForm()
     if form.validate_on_submit():
         task = taskDB()
+        task.user_id = current_user.id
         task.title = form.title.data.strip()
         task.note = form.note.data.strip()
         task.status = 'todo'
@@ -80,6 +112,7 @@ def newTask():
 
 
 @app.route('/edit/<int:task_id>/', methods=['POST', 'GET'])
+@login_required
 def editTask(task_id):
     form = TaskForm()
     task = db.session.query(taskDB).filter_by(id=task_id).one()
@@ -100,6 +133,7 @@ def editTask(task_id):
 
 
 @app.route('/remove/<int:task_id>/', methods=['POST', 'GET'])
+@login_required
 def removeTask(task_id):
     task = db.session.query(taskDB).filter_by(id=task_id).one()
     db.session.delete(task)
@@ -109,6 +143,7 @@ def removeTask(task_id):
 
 
 @app.route('/start/<int:task_id>/', methods=['POST', 'GET'])
+@login_required
 def startTask(task_id):
     task = db.session.query(taskDB).filter_by(id=task_id).one()
     task.status = 'doing'
@@ -118,6 +153,7 @@ def startTask(task_id):
 
 
 @app.route('/finish/<int:task_id>/', methods=['POST', 'GET'])
+@login_required
 def finishTask(task_id):
     task = db.session.query(taskDB).filter_by(id=task_id).one()
     task.status = 'done'
@@ -127,6 +163,7 @@ def finishTask(task_id):
 
 
 @app.route('/restart/<int:task_id>/', methods=['POST', 'GET'])
+@login_required
 def restartTask(task_id):
     task = db.session.query(taskDB).filter_by(id=task_id).one()
     task.status = 'doing'
@@ -134,7 +171,12 @@ def restartTask(task_id):
     db.session.commit()
     return redirect(url_for('home'))
 
-
+@app.route('/logout/')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out')
+    return redirect( url_for('login'))
 
 
 if __name__ == '__main__':

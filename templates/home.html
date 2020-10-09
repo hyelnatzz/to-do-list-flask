@@ -4,6 +4,9 @@
     <div class="row">
         <div class="container">
             <div class="col s12 grey lighten-5">
+                <h3> Welcome, {{ current_user.name }} </h3> <a href="{{ url_for('logout') }}" class="btn red btn-small right" style="margin-top: 10px;"> Logout </a>
+            </div>
+            <div class="col s12 grey lighten-5">
                 {% if get_flashed_messages() %}
                     {% for message in get_flashed_messages()  %}
                     <p class="red white-text">{{ message }} </p>
@@ -11,7 +14,7 @@
                     
                 {% endif %}
                     
-                <a href="{{ url_for('newTask')}}" class="btn red btn-small" style="margin-top: 10px;"> Create New Task </a>
+                <a href="{{ url_for('newTask') }}" class="btn red btn-small" style="margin-top: 10px;"> Create New Task </a>
                 
                 {% if tasks %}
                     {% for status in statuses %}
@@ -140,7 +143,7 @@
 
                     {% endfor %}
                 {% else %}
-                    <h4>No tasks</h4>
+                    <h4>You have no tasks for today, <a href="/new">add task</a></h4>
                 {% endif %}
             </div>
         </div>

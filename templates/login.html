@@ -31,8 +31,11 @@
                             *{{ error }}</p>
                         {% endfor %}
                     </div>
-
-                    {{ form.login(class = 'btn red white-text wave-effect wave-light') }}
+                    
+                       <input type="checkbox" name="remember" id=""> <em> remember me?</em>
+                    <div class="input-field">
+                        {{ form.login(class = 'btn red white-text wave-effect wave-light') }}
+                    </div>
                 </form>
                 <p>don't have account? <a href="/signup">Sign Up</a></p>
             </div>
