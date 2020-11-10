@@ -1,4 +1,4 @@
-from flask import Flask, request, url_for, redirect, flash, render_template
+from flask import Flask, request, url_for, redirect, flash, render_template, jsonify, session
 from flask_login.utils import login_user
 from forms import TaskForm, loginForm, signUpForm
 from models import User, taskDB
@@ -7,11 +7,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_required, login_required, logout_user, current_user
 from datetime import datetime
-"""
-tasks = [{'title':'Wash clothes', 'note':'Take out and clean the dirty laundry', 'status':'todo'},
-         {'title': 'Practice algorithms', 'note': 'Develop some sweet a;go to solve probs', 'status': 'doing'},
-         {'title': 'Submit LHTL Assignment', 'note': 'Submit learning how to learn assignments', 'status': 'done'},
-         {'title': 'Verification entry', 'note': 'Just for verification', 'status': 'done'}]"""
+
 
 
 app = Flask(__name__)
@@ -86,6 +82,7 @@ def success():
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    print({k:v for k,v in session.items()})
     status = ['todo','doing', 'done']
     tasks = db.session.query(taskDB).filter_by(user_id = current_user.id, current_date = datetime.strftime(datetime.now(), '%d/%m/%Y'))
     tasks = sorted(tasks, key= lambda i: i.id)
@@ -177,6 +174,27 @@ def logout():
     logout_user()
     flash('You have been logged out')
     return redirect( url_for('login'))
+
+@app.route('/api/<int:task_id>/')
+@login_required
+def taskApi(task_id):
+    task = taskDB.query.filter_by(id = task_id,user_id = current_user.id).first()
+    if not task:
+        return redirect( url_for('home'))
+    task = {'title': task.title, 'note': task.note, 'status': task.status, 'duration': task.duration, 'start_time': task.start_time, 'finish_time': task.finish_time}
+    return jsonify(task_id = task)
+
+
+@app.route('/api/tasks/')
+@login_required
+def tasksApi():
+    tasks = taskDB.query.filter_by(user_id=current_user.id).all()
+    if not tasks:
+        flash('You have no task entered')
+        return redirect(url_for('home'))
+    tasks = [{'id': task.id, 'title': task.title, 'note': task.note, 'status': task.status,
+            'duration': task.duration, 'start_time': task.start_time, 'finish_time': task.finish_time} for task in tasks] 
+    return jsonify(tasks=tasks)
 
 
 if __name__ == '__main__':
